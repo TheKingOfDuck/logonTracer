@@ -5,6 +5,10 @@
 
 修复了一个原本存在的严重bug。
 
+* [logonTracer基础使用指南](https://github.com/TheKingOfDuck/logonTracer/wiki) 
+
+
+
  
   <div align="center"><img src="images/logo_top.svg" width="500"></div>  
 
