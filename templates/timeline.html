@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <title>LogonTracer汉化版</title>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://gitcdn.github.io/bootstrap-toggle/2.2.2/css/bootstrap-toggle.min.css" integrity="sha384-yBEPaZw444dClEfen526Q6x4nwuzGO6PreKpbRVSLFCci3oYGE5DnD1pNsubCxYW" crossorigin="anonymous">
+  <link rel="stylesheet" href="static/css/style.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.2/Chart.min.js" integrity="sha384-0saKbDOWtYAw5aP4czPUm6ByY5JojfQ9Co6wDgkuM7Zn+anp+4Rj92oGK8cbV91S" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/floatthead/2.1.2/jquery.floatThead.min.js" integrity="sha384-ASdxdxzGplF9B/P3mStsNmNS1x+OFhChbFeLziK29WOvaWkGDMspp2xw5+Vha6Ck" crossorigin="anonymous"></script>
+  <script src="https://gitcdn.github.io/bootstrap-toggle/2.2.2/js/bootstrap-toggle.min.js" integrity="sha384-cd07Jx5KAMCf7qM+DveFKIzHXeCSYUrai+VWCPIXbYL7JraHMFL/IXaCKbLtsxyB" crossorigin="anonymous"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>  <!-- Neo4j JavaScript Driver -->
+  <script src="https://cdn.jsdelivr.net/npm/neo4j-driver@1.7.3/lib/browser/neo4j-web.min.js" integrity="sha384-XVrDQNh79isRQKoUzX8pCHmnP2HmtLQJTDMfzI5/4gxbjqz7mHlGjTKyQxVGKR7k" crossorigin="anonymous"></script>
+  <script src="static/js/script.js"></script>
+</head>
+
+<body>
+  <nav class="navbar navbar-default">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="#"><img src="static/images/logo_timeline.svg" alt="top" width="144" style="margin-top: -5px"></a>
+      <div class="collapse navbar-collapse">
+        <form class="navbar-form navbar-left" role="search">
+          <div class="form-group">
+            <label class="sr-only" for="InputSelect">筛选</label>
+            <select class="form-control" id="InputSelect">
+              <option>用户名</option>
+            </select>
+            <input class="form-control" type="text" value="administrator" id="query-input" size="10">
+            <div id="itemForm"></div>
+          </div>
+          <input type="button" class="btn btn-default" value="+" onclick="ItemField.add();" />
+          <input type="button" class="btn btn-default" value="-" onclick="ItemField.del();" />
+          <input checked data-toggle="toggle" data-on="Table" data-off="Graph" data-onstyle="primary" data-offstyle="info" data-height="35" type="checkbox"  id="timelineTypes">
+          <button type="button" class="btn btn-default" onclick="searchTimeline()">搜索</button>
+          <button type="button" class="btn btn-default" onclick="createAlltimeline()">全部</button>
+          <div class="btn-group">
+            <button class="btn btn-default dropdown-toggle" type="button" data-toggle="dropdown" aria-expanded="false">
+              下载<span class="caret"></span>
+            </button>
+            <ul class="dropdown-menu" role="menu">
+              <li role="presentation"><a onclick="downloadSummary()">总结</a></li>
+              <li role="presentation"><a onclick="downloadDetail()">详情</a></li>
+            </ul>
+          </div>
+        </form>
+      </div>
+    </div>
+  </nav>
+
+  <div class="container-fluid">
+    <div class="row">
+      <div class="col-sm-12 col-md-12 main">
+        <div id="error"></div>
+        <div id="cy"></div>
+        <div id="addcanvas"></div>
+      </div>
+    </div>
+  </div>
+  <script type="text/javascript">
+    var neo = neo4j.default;
+    //Neo4j access settings
+    var driver = neo.driver("bolt://{{ server_ip }}", neo.auth.basic("{{ neo4j_user }}", "{{ neo4j_password }}"));
+    var session = driver.session();
+    //createAlltimeline();
+
+    var currentNumber = 0;
+    var ItemField = {
+      currentNumber: 0,
+      itemTemplate: '<label class="sr-only" for="InputSelect">筛选</label>\
+                                <select class="form-control" id="InputSelect_count_">\
+                                <option>用户名</option></select>\
+                                <input class="form-control" type="text" id="query-input_count_" size="10">',
+      add: function() {
+        currentNumber++;
+        if (currentNumber <= 10) {
+          var new_item = this.itemTemplate.replace(/_count_/mg, currentNumber);
+          var new_area = document.createElement("div");
+          new_area.setAttribute("id", "item" + currentNumber);
+          var field = document.getElementById('itemForm');
+          field.appendChild(new_area);
+          document.getElementById('item' + currentNumber).innerHTML = new_item;
+        }
+      },
+      del: function() {
+        if (currentNumber == 0) {
+          return;
+        }
+        var field = document.getElementById('itemForm');
+        field.removeChild(field.lastChild);
+        currentNumber--;
+      }
+    }
+  </script>
+</body>
+
+</html>

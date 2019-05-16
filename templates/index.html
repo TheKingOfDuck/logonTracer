@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <title>LogonTracer汉化版</title>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+  <link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/qtip2/2.2.1/jquery.qtip.css" integrity="sha384-EG4MkHYaMXjB6f2q1t0Jfs+W6DpGsGZls4D6PYHr9yhXwZf27Z10ReappeV2ZXcU" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://gitcdn.github.io/bootstrap-toggle/2.2.2/css/bootstrap-toggle.min.css" integrity="sha384-yBEPaZw444dClEfen526Q6x4nwuzGO6PreKpbRVSLFCci3oYGE5DnD1pNsubCxYW" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" integrity="sha384-CmLV3WR+cw/TcN50vJSYAs2EAzhDD77tQvGcmoZ1KEzxtpl2K5xkrpFz9N2H9ClN" crossorigin="anonymous">
+  <link rel="stylesheet" href="static/css/style.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qtip2/2.2.1/jquery.qtip.js" integrity="sha384-6pAYkjo39N26cI9QEzy7zTD9xr9XzSnaWywG02LeFyoJnBEyYvWvqomLU+uGAlaw" crossorigin="anonymous"></script>
+  <script src="https://gitcdn.github.io/bootstrap-toggle/2.2.2/js/bootstrap-toggle.min.js" integrity="sha384-cd07Jx5KAMCf7qM+DveFKIzHXeCSYUrai+VWCPIXbYL7JraHMFL/IXaCKbLtsxyB" crossorigin="anonymous"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/cytoscape@3.4.2/dist/cytoscape.min.js" integrity="sha384-vTbGUxFr0qyAqYeS+nIqQ6Row8uIp1PgvAWiA4GuEtdkD8scsArkL9QgZHWaHuv5" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/cytoscape-qtip@2.7.1/cytoscape-qtip.min.js" integrity="sha384-0S5MX36ySZW8tkZEooDZdxYdGvtwdVxA/1bl0U0zoqsrHBJbv4LxKxc8Hp8LpxlE" crossorigin="anonymous"></script>
+  <!-- Neo4j JavaScript Driver -->
+  <script src="https://cdn.jsdelivr.net/npm/neo4j-driver@1.7.3/lib/browser/neo4j-web.min.js" integrity="sha384-XVrDQNh79isRQKoUzX8pCHmnP2HmtLQJTDMfzI5/4gxbjqz7mHlGjTKyQxVGKR7k" crossorigin="anonymous"></script>
+  <script src="static/js/script.js"></script>
+</head>
+
+<body>
+  <nav class="navbar navbar-default">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="#"><img src="static/images/logo_top.svg" alt="top" width="190" style="margin-top: -5px"></a>
+      <div class="collapse navbar-collapse">
+        <form class="navbar-form navbar-left" role="search">
+          <div class="form-group">
+            <label class="sr-only" for="InputSelect">筛选</label>
+            <select class="form-control" id="InputSelect">
+              <option>用户名</option>
+              <option>主机名</option>
+              <option>IP地址</option>
+            </select>
+            <input class="form-control" type="text" value="administrator" id="query-input" size="10">
+            <div id="itemForm"></div>
+          </div>
+          <input type="button" class="btn btn-default" value="+" onclick="ItemField.add();" />
+          <input type="button" class="btn btn-default" value="-" onclick="ItemField.del();" />
+          <div class="checkbox">
+            <a data-toggle="tooltip" data-placement="bottom" data-original-title="Select Event ID to visualize.">事件ID: </a>
+            <label data-toggle="tooltip" data-placement="bottom" data-original-title="Successful logon">
+              <input type="checkbox" id="id4624" checked="checked"> 4624
+            </label>
+            <label data-toggle="tooltip" data-placement="bottom" data-original-title="Logon failure">
+              <input type="checkbox" id="id4625" checked="checked"> 4625
+            </label>
+            <label data-toggle="tooltip" data-placement="bottom" data-original-title="Kerberos Authentication (TGT Request)">
+              <input type="checkbox" id="id4768" checked="checked"> 4768
+            </label>
+            <label data-toggle="tooltip" data-placement="bottom" data-original-title="Kerberos Service Ticket (ST Request)">
+              <input type="checkbox" id="id4769" checked="checked"> 4769
+            </label>
+            <label data-toggle="tooltip" data-placement="bottom" data-original-title="NTLM Authentication">
+              <input type="checkbox" id="id4776" checked="checked"> 4776
+            </label>
+          </div>
+          <a data-toggle="tooltip" data-placement="bottom" data-original-title="Set the lower limit of Event ID to visualize."> 总量: </a>
+          <div class="form-group">
+            <input class="form-control" type="text" value=0 id="count-input" size="1">
+          </div>
+          <button type="button" class="btn btn-default" data-toggle="tooltip" data-placement="bottom" data-original-title="Username/IPAddress/Hostname search" onclick="createQuery()">搜索</button>
+          <button type="button" class="btn btn-default" data-toggle="tooltip" data-placement="bottom" data-original-title="Search for how exploit the administrator account from the account. (only one Username)" onclick="searchPath()">搜索路径</button>
+          <div class="btn-group">
+            <a href="#" class="btn btn-default dropdown-toggle" type="button" data-toggle="dropdown" aria-expanded="false">
+              导出 <span class="caret"></span>
+            </a>
+            <ul class="dropdown-menu" role="menu">
+              <li role="presentation"><a onclick="exportCSV()">CSV</a></li>
+              <li role="presentation"><a download="image.json" id="export-json" onclick="exportJSON()">JSON</a></li>
+              <li role="presentation"><a download="image.png" id="export-png" onclick="exportPNG()">PNG</a></li>
+              <li role="presentation"><a download="image.jpeg" id="export-jpeg" onclick="exportJPEG()">JPEG</a></li>
+            </ul>
+          </div>
+        </form>
+      </div>
+    </div>
+  </nav>
+
+  <div class="container-fluid">
+    <div class="row">
+      <div class="col-sm-2 col-md-2 sidebar">
+        <div class="list-group">
+          <button type="button" class="list-group-item" data-toggle="tooltip" data-placement="bottom" data-original-title="Visualizing all users and hosts." onclick="createAllQuery()">所有用户</button>
+          <button type="button" class="list-group-item" data-toggle="tooltip" data-placement="bottom" data-original-title="Visualizing users with system privileges." onclick="createSystemQuery()">系统权限</button>
+          <button type="button" class="list-group-item" data-toggle="tooltip" data-placement="bottom" data-original-title="Visualizing remote logon users and hosts using NTLM authentication. If not using NTLM authentication, it may be pass-the-hash." onclick="createNTLMQuery()">NTLM登录</button>
+          <button type="button" class="list-group-item" data-toggle="tooltip" data-placement="bottom" data-original-title="Visualizing RDP logon users and hosts (Logon type: 10)." onclick="createRDPQuery()">RDP登录</button>
+          <button type="button" class="list-group-item" data-toggle="tooltip" data-placement="bottom" data-original-title="Visualizing logon users and hosts from remote network (Logon type: 3)." onclick="createNetQuery()">网络登录</button>
+          <button type="button" class="list-group-item" data-toggle="tooltip" data-placement="bottom" data-original-title="Visualizing batch server logon (Logon type: 4)." onclick="createBatchQuery()">批处理登录</button>
+          <button type="button" class="list-group-item" data-toggle="tooltip" data-placement="bottom" data-original-title="Visualizing Services Control Manager logon (Logon type: 5)." onclick="createServiceQuery()">服务登录</button>
+          <button type="button" class="list-group-item" data-toggle="tooltip" data-placement="bottom" data-original-title="Visualizing the error log that the ms14-068 exploit failed." onclick="create14068Query()">MS14-068执行失败</button>
+          <button type="button" class="list-group-item" data-toggle="tooltip" data-placement="bottom" data-original-title="Visualizing failed logon." onclick="createFailQuery()">登录失败</button>
+          <button type="button" class="list-group-item" data-toggle="tooltip" data-placement="bottom" data-original-title="Visualizing DCSync and DCShadow log." onclick="dcsQuery()">DCSync/DCShadow检查</button>
+          <button type="button" class="list-group-item" data-toggle="tooltip" data-placement="bottom" data-original-title="Visualizing deleted or added users." onclick="adddelUsersQuery()">添加/删除用户</button>
+          <button type="button" class="list-group-item" data-toggle="tooltip" data-placement="bottom" data-original-title="Visualizing all domain names. If an attacker is intrude into a network, there may be a malicious domain name." onclick="createDomainQuery()">域检查</button>
+          <button type="button" class="list-group-item" data-toggle="tooltip" data-placement="bottom" data-original-title="Visualizing changed audit policy." onclick="policyQuery()">审核策略修改</button>
+        </div>
+        <hr>
+        <a data-toggle="tooltip" data-placement="bottom" data-original-title="Add value to edges of visualization graph.">添加事件值</a><br>
+        <div class="btn-group" data-toggle="buttons">
+          <label class="btn btn-default">
+            <input type="checkbox" name="options" id="label-count" autocomplete="off">总量</label>
+          <label class="btn btn-default">
+            <input type="checkbox" name="options" id="label-type" autocomplete="off">类型</label>
+          <label class="btn btn-default">
+            <input type="checkbox" name="options" id="label-authname" autocomplete="off">认证</label>
+        </div>
+        <hr>
+        <a data-toggle="tooltip" data-placement="bottom" data-original-title="Select visualization graph mode.">图表模式</a><br>
+        <div class="btn-group" data-toggle="buttons">
+          <label class="btn btn-default active">
+		        <input type="radio" id="modeGrid" name="graphmode" checked="checked">grid</label>
+          <label class="btn btn-default">
+		        <input type="radio" id="modeCose" name="graphmode">cose</label>
+          <label class="btn btn-default">
+		        <input type="radio" id="modeCircle" name="graphmode">circle</label>
+          <label class="btn btn-default">
+  		      <input type="radio" id="modeTree" name="graphmode">tree</label>
+        </div>
+        <hr>
+        <a data-toggle="tooltip" data-placement="bottom" data-original-title="Enable visualization of malicious account ranking.">等级可视化模式</a><br>
+        <input type="checkbox" data-toggle="toggle" data-on="Enabled" data-height="35" data-off="Disabled" id="rankMode">
+        <hr>
+        <a data-toggle="tooltip" data-placement="bottom" data-original-title="Displays hourly event log counts in time series.">等级可视化模式</a><br>
+        <button class="btn btn-default" onClick="window.open('timeline')">创建时间线</button>
+        <hr>
+        <a data-toggle="tooltip" data-placement="bottom" data-original-title="Import event logs in EVTX or XML format.">上传</a><br>
+        <button class="btn btn-default" data-toggle="modal" data-target="#UploadEVTX">日志上传</button>
+      </div>
+      <div class="col-sm-8 col-md-8 main">
+        <div id="error"></div>
+        <div id="cy" style="height:1000px;"></div>
+        <div id="loading">
+          <span class="fa fa-refresh fa-spin"></span>
+        </div>
+      </div>
+      <div class="col-sm-2 col-md-2">
+        <div class="container" id="rankUser"></div>
+        <ul class="pager">
+          <li><a onclick="pruserBack()">上一页</a></li>
+          <li><a onclick="pruserNext()">下一页</a></li>
+        </ul>
+        <hr>
+        <div class="container" id="rankHost"></div>
+        <ul class="pager">
+          <li><a onclick="prhostBack()">上一页</a></li>
+          <li><a onclick="prhostNext()">下一页</a></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  <!-- Upload -->
+  <div class="modal fade" id="UploadEVTX" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal"><span>×</span></button>
+          <h4 class="modal-title">上传事件日志文件</h4>
+        </div>
+        <div class="modal-body">
+          <div id="zoneTime"></div>
+          <div class="col-xs-2">
+            <select class="form-control" id="logType">
+              <option>EVTX格式</option>
+              <option>XML格式</option>
+            </select>
+          </div>
+          <div class="input-group">
+            <input multiple id="lefile" type="file" style="display:none">
+            <input type="text" id="evtx_name" class="form-control" placeholder="select file (multi files) ...">
+            <span class="input-group-btn"><button type="button" class="btn btn-info" onclick="$('input[id=lefile]').click();">浏览</button></span>
+          </div>
+          <div id="uploadBar"></div>
+          <div id="status"></div>
+        </div>
+        <div class="modal-footer">
+          <button type="submit" class="btn btn-primary" onclick="file_upload()">上传</button>
+          <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+          <a href="log" target="_blank"><button type="button" class="btn btn-default">日志</button></a>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- Warning message -->
+  <div class="modal fade" id="warningMessage" tabindex="-1">
+    <div class="modal-dialog modal-sm">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h4 class="modal-title">警告!</h4>
+        </div>
+        <div class="modal-body">
+          <p>由于图形数据较大，网页加载速度较慢。是否继续搜索?</p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" onclick="contQuery()" data-dismiss="modal">确定</button>
+          <button type="button" class="btn btn-primary" data-dismiss="modal">取消</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script type="text/javascript">
+    var neo = neo4j.default;
+    //Neo4j access settings
+    var driver = neo.driver("bolt://{{ server_ip }}", neo.auth.basic("{{ neo4j_user }}", "{{ neo4j_password }}"));
+    var session = driver.session();
+    var cy = cytoscape();
+    var rankpageUser = 0
+    var rankpageHost = 0
+
+    var userqueryStr = 'MATCH (node:Username) RETURN node ORDER BY node.rank DESC';
+    var ipqueryStr = 'MATCH (node:IPAddress) RETURN node ORDER BY node.rank DESC';
+    pagerankQuery(userqueryStr, "User", rankpageUser);
+    pagerankQuery(ipqueryStr, "Host", rankpageHost);
+    logdeleteCheck();
+
+    var loading = document.getElementById('loading');
+    loading.classList.add('loaded');
+
+    var currentNumber = 0;
+    var ItemField = {
+      currentNumber: 0,
+      itemTemplate: '<label class="sr-only" for="InputSelect">筛选</label>\
+                                <select class="form-control" id="InputSelect_count_">\
+                                <option>Username</option><option>主机名</option><option>IP地址</option></select>\
+                                <input class="form-control" type="text" id="query-input_count_" size="10">\
+                                <label class="sr-only" for="InputSelect">筛选</label>\
+                                <select class="form-control" id="InputRule_count_">\
+                                <option>OR</option><option>AND</option></select>',
+      add: function() {
+        currentNumber++;
+        if (currentNumber <= 10) {
+          var new_item = this.itemTemplate.replace(/_count_/mg, currentNumber);
+          var new_area = document.createElement("div");
+          new_area.setAttribute("id", "item" + currentNumber);
+          var field = document.getElementById('itemForm');
+          field.appendChild(new_area);
+          document.getElementById('item' + currentNumber).innerHTML = new_item;
+        }
+      },
+      del: function() {
+        if (currentNumber == 0) {
+          return;
+        }
+        var field = document.getElementById('itemForm');
+        field.removeChild(field.lastChild);
+        currentNumber--;
+      }
+    }
+
+    var downMenu = '<div class="col-xs-2"><select class="form-control" id="utcTime"><option>Time Zone</option>';
+    for (i = +14; i >= -12; i--) {
+      downMenu += '<option>' + i + '</option>';
+    }
+    downMenu += '</select></div>';
+    document.getElementById("zoneTime").innerHTML = downMenu;
+
+    $('input[id=lefile]').change(function() {
+      var inFile = "";
+      var fileList = document.getElementById("lefile").files;
+      if (1 < fileList.length) {
+        inFile += "selected " + fileList.length + " files."
+      } else {
+        inFile += fileList[0].name
+      }
+      $('#evtx_name').val(inFile.replace("C:\\fakepath\\", ""));
+    });
+
+    $(function () {
+      $('[data-toggle="tooltip"]').tooltip();
+    })
+  </script>
+</body>
+
+</html>
