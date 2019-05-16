@@ -1,9 +1,5 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-#
-# LICENSE
-# Please refer to the LICENSE.txt in the https://github.com/JPCERTCC/aa-tools/
-#
 
 import os
 import sys
