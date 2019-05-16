@@ -1,0 +1,8 @@
+numpy
+py2neo==3.1.2
+python-evtx
+lxml
+changefinder
+flask
+hmmlearn
+scikit-learn==0.19.2
